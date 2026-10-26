@@ -15,16 +15,9 @@
 // Animal Data
 // ------------------------------------
 
-const animals = [
-	{ id: 1, name: "Luna", species: "cat", age: 3, adopted: false },
-	{ id: 2, name: "Biscuit", species: "dog", age: 7, adopted: true },
-	{ id: 3, name: "Pepper", species: "cat", age: 1, adopted: true },
-	{ id: 4, name: "Moose", species: "dog", age: 5, adopted: false },
-	{ id: 5, name: "Charly", species: "dog", age: 4, adopted: false },
-	{ id: 6, name: "Bill", species: "cat", age: 0.5, adopted: true },
-	{ id: 7, name: "Chompers", species: "rabbit", age: 0.5, adopted: false },
-	{ id: 8, name: "Beowulf", species: "dog", age: 7, adopted: true },
-];
+// Starts empty and gets filled in by loadAnimals() once animals.json arrives.
+// It has to be let because the whole array gets replaced, not just changed.
+let animals = [];
 
 // What the user currently wants to see. The page controls change these.
 let activeFilter = "all";
@@ -166,6 +159,48 @@ sortSelect.addEventListener("change", () => {
 	updateDisplay();
 });
 
-// Display the original list and the count when the page first opens.
-displayAnimals(animals);
-updateCount();
+// ------------------------------------
+// Load Animals
+// ------------------------------------
+
+// Gets the animals from public/animals.json and shows them. While waiting
+// it shows a loading message, and if anything goes wrong it shows an error
+// instead of leaving the page blank.
+async function loadAnimals() {
+	const countText = document.querySelector("#animal-count");
+	const animalList = document.querySelector("#animal-list");
+
+	countText.textContent = "Loading animals...";
+	animalList.innerHTML = "";
+
+	try {
+		// await pauses only this function until the server answers. The rest
+		// of the page keeps running in the meantime, so the browser can still
+		// draw the loading message and respond to clicks while we wait.
+		const response = await fetch("/animals.json");
+
+		// fetch() only fails by itself when the request can't happen at all,
+		// like when there's no internet. If the server answers with an error
+		// like 404 or 500, fetch() still counts that as a success, so we
+		// have to check response.ok ourselves.
+		if (!response.ok) {
+			throw new Error(`Request failed with status ${response.status}`);
+		}
+
+		animals = await response.json();
+		updateDisplay();
+	} catch (error) {
+		// The error goes to the console for debugging, and the user gets a
+		// friendly message instead.
+		console.error(error);
+		countText.textContent = "";
+
+		const errorMessage = document.createElement("p");
+		errorMessage.textContent =
+			"Sorry, the animals couldn't be loaded. Try refreshing the page.";
+		errorMessage.classList.add("error-message");
+		animalList.appendChild(errorMessage);
+	}
+}
+
+loadAnimals();
