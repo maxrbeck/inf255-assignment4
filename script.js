@@ -1,3 +1,6 @@
+// Day.js comes from npm. Vite finds it in node_modules when it sees this import.
+import dayjs from "dayjs";
+
 "use strict";
 
 /*
@@ -57,6 +60,14 @@ function displayAnimals(animalArray) {
 		const details = document.createElement("p");
 		details.textContent = `${animal.species}, ${animal.age} years old`;
 
+		// Day.js turns the "2026-08-20" date from the JSON into something
+		// readable, and diff() counts the days between then and today
+		// (dayjs() with nothing passed in means right now).
+		const arrival = document.createElement("p");
+		const arrivedOn = dayjs(animal.intakeDate).format("MMM D, YYYY");
+		const daysAgo = dayjs().diff(animal.intakeDate, "day");
+		arrival.textContent = `Arrived ${arrivedOn} (${daysAgo} days ago)`;
+
 		const status = document.createElement("p");
 		status.textContent = animal.adopted ? "Adopted" : "Available";
 
@@ -70,7 +81,7 @@ function displayAnimals(animalArray) {
 		// remembers this card's animal (a closure) and passes its id along.
 		button.addEventListener("click", () => toggleAdoption(animal.id));
 
-		card.append(heading, details, status, button);
+		card.append(heading, details, arrival, status, button);
 		animalList.appendChild(card);
 	});
 }
