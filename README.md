@@ -1,3 +1,43 @@
+# About this project
+
+An animal adoption board that loads the shelter's animals from
+`public/animals.json`, lets you filter, sort, adopt and return them, and shows
+how long each animal has been at the shelter. It runs with Vite.
+
+## How to run it
+
+After cloning the repository, run these in the project folder:
+
+```
+npm install
+npm run dev
+```
+
+Then open the `localhost` address Vite prints.
+
+`npm install` is needed because `node_modules` isn't in the repository, so it
+reads `package.json` and downloads Vite and Day.js before anything can run.
+
+## Dependency check
+
+Day.js formats each animal's `intakeDate` into a readable date like
+"Aug 20, 2026" and counts how many days ago that was, which shows up on every
+card.
+
+When I ran `npm run build`, the `.js` file it reported was **10.64 kB**
+(4.48 kB gzipped). Before adding Day.js it was 2.77 kB, so Day.js accounts for
+most of the file.
+
+I could have done this without Day.js by using `new Date()`,
+`toLocaleDateString()`, and subtracting the two dates in milliseconds and
+dividing by the number of milliseconds in a day. For just one date format
+that's only a few lines, so Day.js isn't strictly necessary. I still think it
+was worth adding: it handles time zones and date parsing problems that are
+easy to get wrong by hand, it makes the code much easier to read, and 8 kB is
+small for a site like this.
+
+---
+
 # Assignment 4 — Loading Data with async and npm
 
 You will continue building the animal adoption app in this assignment, but instead of working with an array of local data, you will fetch the data from a json file. While fetching the data, your interface will display a "loading" message, and depending on the response, show the resulting list or an error message.
